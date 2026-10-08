@@ -1,0 +1,88 @@
+# ============================================================
+#  .gitignore — 绝不入库的东西
+# ============================================================
+
+# --- 上游源码树（按 versions.lock 现取，不入库）---
+/src/
+/kernel*/
+/kernel-*/
+
+# --- 构建产物 ---
+/out/
+/out-*/
+*.o
+*.ko
+*.mod
+*.mod.c
+*.cmd
+*.a
+*.so
+Module.symvers
+modules.order
+modules.builtin
+vmlinux
+vmlinux.o
+vmlinux.symvers
+System.map
+Image
+Image.gz
+Image.lz4
+dtb
+*.dtb
+*.dtbo
+
+# --- 刷机镜像与包 ---
+*.img
+*.zip
+boot-new.img
+ramdisk.cpio*
+*.cpio
+*.cpio.gz
+
+# --- 签名私钥（★ 泄露即等于设备签名密钥泄露，绝不入库）---
+*.pem
+*.pk8
+*.pk8.pem
+*.x509
+*.avb
+*key.pem
+avb_*
+
+# --- 工具链（GB 级，CI 里现取）---
+/toolchain/
+/clang*/
+/rust/
+/build-tools/
+
+# --- 日志与临时文件 ---
+*.log
+/*.log
+/tmp/
+scratch/
+.DS_Store
+*~
+*.bak
+*.orig
+*.rej
+*.part
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# --- 设备标识（防误提交个人数据）---
+device-profile.md
+state-now.txt
+device_facts.txt
+*.serial
+*imei*
+*.ips
+
+# --- 本地覆盖 ---
+local.mk
+local.env
+.env
+.env.local

@@ -1,0 +1,71 @@
+# versions.lock — 唯一真相来源（Single Source of Truth）
+# ============================================================
+# 本文件 pin 死了本次成功构建（2026-10-08，boot_index 365，实测开机）的
+# 全部上游依赖。任何"对应源码在哪"的问题，答案只在本文件。
+#
+# 规则：
+#   - 只写分支名不写 SHA 等于没有 pin（上游一动，构建不可复现）
+#   - 改动任何一行 = 一次新的构建，必须重跑 ABI 校验并单独记录
+#   - Release 正文必须内嵌本文件全文（GPL-2.0 对应源码指认）
+# ============================================================
+
+[upstream]
+# 主源码树。注意：**不是** aosp-mirror/kernel_common
+# 必须用带厂商适配层的 cctv18 fork，否则编译产物无法启动（见 docs/WHY-CCTV18.md）
+name      = cctv18/android_gki_kernel_common
+url       = https://github.com/cctv18/android_gki_kernel_common
+branch    = android16-6.12-2026-03
+commit    = 58ee67741556c83c523f48518284c4a6b1ef31d6
+commit_msg = Add Re-Kernel & Re-Kernel netlink support
+commit_date = 2026-03-16T20:30:12Z
+commit_author = cctv18
+license   = GPL-2.0-only (COPYING: GPL-2.0 WITH Linux-syscall-note, version 2 only)
+
+[verification]
+# 上游 SHA 必须与 git ls-remote 结果一致，scripts/fetch-sources.sh 会断言
+verified_on = 2026-10-08
+verify_cmd  = git ls-remote https://github.com/cctv18/android_gki_kernel_common refs/heads/android16-6.12-2026-03
+
+[tree]
+sublevel  = 69
+# 与设备原厂内核版本号一致（uname -r = 6.12.69-android16-6-g586bfab1b9c5-abogki536749445-4k）
+# 路径数约 87186（完整树，非稀疏），本地检出约 1.9 GB
+
+[toolchain]
+# AOSP prebuilt clang，版本必须与 build.config.constants 的 CLANG_VERSION 一致
+clang_version   = r536225
+clang_revision  = 12833971
+clang_string    = Android (12833971, +pgo, +bolt, +lto, +mlgo, based on r536225) clang version 19.0.1
+rust_version    = 1.82.0.p2
+
+[device]
+# 目标设备（实机采自 /proc/bootconfig 与 getprop，见 docs/device-facts.md）
+codename      = pudding
+platform      = canoe
+model         = 25113PN0EC
+soc           = SM8850
+android       = 17 (SDK 37)
+kmi_generation = android16-6-4k
+# 关键：KMI 名来自 vendor 模块 vermagic，不是 OS 大版本
+kmi_source    = modinfo /vendor_dlkm/lib/modules/msm_drm.ko | grep vermagic
+stock_kernel  = 6.12.69-android16-6-g586bfab1b9c5-abogki536749445-4k
+security_patch = 2026-09-01
+
+[artifacts]
+# 本次成功构建的产物校验值（2026-10-08）
+kernel_version_string = 6.12.69-android16-6-4k-Ma6302
+vermagic              = 6.12.69-android16-6-4k SMP preempt mod_unload modversions aarch64
+image_md5             = 146b1bb4810b89383a47e05541ddf24e
+image_size            = 41896448
+package_name          = pudding-cctv18-20261008.zip
+package_md5           = 596cf12d745f0651450ca5623db2f9d2
+package_size          = 19926582
+
+[abi_baseline]
+# 四重 ABI 校验结果（全部通过，预测与实测一致）
+# 详见 docs/ABI-VERIFICATION.md
+symvers_vs_abistg   = 10235/10235 MATCH, DIFF 0, MISSING 0 (100.0000%)
+msm_drm_ko          = 851 symbols: MATCH 701, DIFF 0, MISSING 150 (vendor-module-provided)
+struct_module       = 1600 bytes / 75 members  (must match working kernels)
+kobject_uevent_env  = 0x8bb6d45c
+gki_abistg_sha      = (见上游 commit 58ee6774 的 gki/aarch64/abi.stg)
