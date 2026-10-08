@@ -89,19 +89,27 @@ fastboot flash boot_a stock-boot.img    # 回滚（PC 端执行）
 ```
 versions.lock                 # ★ 唯一真相来源：上游 URL + ref + commit SHA
 config/
-  device.fragment             # 配置增量（本版为空：只用树自带 gki_defconfig）
+  README.md                   # 配置增量片段的规矩与红线
 scripts/
   fetch-sources.sh            # 取上游并按 SHA 校验
   build.sh                    # 构建（含 GKI 官方构建环境 source）
-  verify-abi.sh               # 四重 ABI 校验
+  verify-abi.sh / .py         # 四重 ABI 校验
+  analysis/
+    parse-module-versions.py  # 从设备 .ko 提取 ABI 要求（851 符号）
+analysis/
+  01-config-comparison.md     # 三方 defconfig 对比（Jianke / 原厂 / cctv18）
+  02-device-module-abi.md     # 设备真实模块的 ABI 要求
+  03-splash-hang-analysis.md  # 卡第一屏完整分析（含 3 个被推翻的判断）
 docs/
-  WHY-CCTV18.md               # 根因分析：为什么必须用这棵树
-  ABI-VERIFICATION.md         # ABI 校验方法论（可复用于每次迭代）
+  WHY-CCTV18.md               # 根因：为什么必须用这棵树
+  ABI-VERIFICATION.md         # 四重校验方法论（可复用于每次迭代）
   BUILD.md                    # 完整构建步骤与参数
   FLASH-AND-ROLLBACK.md       # 刷机与回滚
-  FAILURE-LOG.md              # 三次失败记录（勿重复踩坑）
+  FAILURE-LOG.md              # 八个坑（勿重复踩）
   device-facts.md             # 实机采集事实
   UPGRADE.md                  # 如何跟随上游升级
+  CHANGELOG.md                # 版本记录
+  CLEANUP-LOG.md              # 工作区清理记录（删除项与理由）
 ```
 
 ---
