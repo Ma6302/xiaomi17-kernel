@@ -13,13 +13,18 @@
 
 | 项 | 值 |
 |---|---|
-| 最新可用版 | `pudding-cctv18-20261008.zip` |
-| 实测结果 | **开机成功**（2026-10-08，boot_index 365） |
+| 最新可用版 | `pudding-cctv18-20261009-misched.zip` |
+| 实测结果 | **开机成功**（2026-10-09，boot_index 372） |
 | 内核版本串 | `6.12.69-android16-6-4k-Ma6302` |
 | 上游 | `cctv18/android_gki_kernel_common` @ `android16-6.12-2026-03` |
 | 上游 commit | `58ee67741556c83c523f48518284c4a6b1ef31d6` |
 | 设备 KMI | `android16-6-4k` |
 | KernelSU | **未内置**（保留设备现有 LKM 模式 root） |
+
+> 版本谱系（均已验证开机）：
+> - `pudding-cctv18-20261008.zip`（boot_index 365）— 零调优干净基线
+> - `pudding-cctv18-20261009-zstd-lz4.zip`（boot_index 367）— 算法层升级 zstd 1.5.7 + lz4 1.10.0
+> - `pudding-cctv18-20261009-misched.zip`（boot_index 372）— mi_sched 路径 A + MK-Addon 模块
 
 ---
 
@@ -110,6 +115,12 @@ docs/
   UPGRADE.md                  # 如何跟随上游升级
   CHANGELOG.md                # 版本记录
   CLEANUP-LOG.md              # 工作区清理记录（删除项与理由）
+  mi_sched-reverse.md         # 逆向：小米 mi_sched (MQHD) 结构与移植路径
+  zram-wb-reverse.md          # 逆向：小米 zram 回写机制（zgroup/xswapd/mctrl）
+addon/
+  mk-addon/                   # 配套用户空间模块（AK3 内自动安装）
+    config.conf               # ★ 集中配置（VM/IO/zram/研究开关）
+    lib/zram.sh               # zram 算法切换（含 mkswap 修复）
 ```
 
 ---

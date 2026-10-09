@@ -1,0 +1,6 @@
+id=mk-addon
+name=Ma6302 Kernel Addon
+version=1.0.0
+versionCode=2026100901
+author=Ma6302
+description=内核附加模块：参数调节 + zram 压缩算法切换 + 研究数据收集（配套 Ma6302 自编译内核）

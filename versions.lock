@@ -52,14 +52,24 @@ stock_kernel  = 6.12.69-android16-6-g586bfab1b9c5-abogki536749445-4k
 security_patch = 2026-09-01
 
 [artifacts]
-# 本次成功构建的产物校验值（2026-10-08）
+# 最新可用构建（2026-10-09，boot_index 372，mi_sched 路径 A + MK-Addon）
 kernel_version_string = 6.12.69-android16-6-4k-Ma6302
 vermagic              = 6.12.69-android16-6-4k SMP preempt mod_unload modversions aarch64
-image_md5             = 146b1bb4810b89383a47e05541ddf24e
-image_size            = 41896448
-package_name          = pudding-cctv18-20261008.zip
-package_md5           = 596cf12d745f0651450ca5623db2f9d2
-package_size          = 19926582
+image_md5             = 72549b282b413f63f9e43431e00cbcbb
+package_name          = pudding-cctv18-20261009-misched.zip
+package_md5           = a96113bc54a004bf25f0aaba8a59a874
+package_size          = 19991918
+boot_index            = 372
+
+# 历史构建（均验证开机）
+# 2026-10-08  boot_index 365  零调优基线
+#   image_md5   = 146b1bb4810b89383a47e05541ddf24e
+#   package     = pudding-cctv18-20261008.zip
+#   package_md5 = 596cf12d745f0651450ca5623db2f9d2
+# 2026-10-09  boot_index 367  zstd 1.5.7 + lz4 1.10.0
+#   image_md5   = b90644df98b8f4ced9220eb347ff387d
+#   package     = pudding-cctv18-20261009-zstd-lz4.zip
+#   package_md5 = 7fe863992d60ea88bc6f97c883285c91
 
 [abi_baseline]
 # 四重 ABI 校验结果（全部通过，预测与实测一致）
