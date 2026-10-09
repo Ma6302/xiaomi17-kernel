@@ -17,6 +17,11 @@ OUT="$CD/snapshot-$TS.txt"
   echo "############################################################"
   echo "# MK-Addon snapshot  $TS"
   echo "# device: $(getprop ro.product.device) / $(getprop ro.product.board)"
+  if kernel_is_ours; then
+    echo "# kernel: OURS ($(kernel_release))"
+  else
+    echo "# kernel: NOT-OURS ($(kernel_release))  -> tuning skipped"
+  fi
   echo "############################################################"
 
   echo; echo "== 1. kernel =="

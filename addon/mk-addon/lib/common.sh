@@ -67,3 +67,38 @@ write_val_in_path() {
 node_read() {
     [ -f "$1" ] && cat "$1" 2>/dev/null || echo "-"
 }
+
+# ---------- kernel identity guard ----------
+# 目的：刷回原厂/别家内核后，本模块必须【自动停止工作】，
+#       不能继续改 VM/IO 参数或切换 zram 压缩算法。
+kernel_release() {
+    uname -r 2>/dev/null
+}
+
+# 运行内核是否为本项目构建的内核（署名匹配）
+# 返回 0 = 是（或未配置 tag，不拦截）；1 = 不是
+kernel_is_ours() {
+    want="$(cfg_get EXPECTED_KERNEL_TAG Ma6302)"
+    [ -z "$want" ] && return 0
+    rel="$(kernel_release)"
+    [ -z "$rel" ] && return 1
+    case "$rel" in
+        *"$want"*) return 0 ;;
+    esac
+    return 1
+}
+
+# 守卫总检查；返回 0 = 允许继续，1 = 应停止
+# GUARD_FORCE=1 可强制跳过（仅 apply.sh --force 使用）
+guard_check() {
+    [ "$GUARD_FORCE" = "1" ] && { log "GUARD: forced (GUARD_FORCE=1)"; return 0; }
+    [ "$(cfg_get KERNEL_GUARD 1)" = "1" ] || { log "GUARD: disabled in config"; return 0; }
+    if kernel_is_ours; then
+        log "GUARD: kernel OK ($(kernel_release))"
+        return 0
+    fi
+    log "GUARD: 运行内核不是本项目内核 —— 停止一切调参/切换"
+    log "GUARD:   running = $(kernel_release)"
+    log "GUARD:   expect  = *$(cfg_get EXPECTED_KERNEL_TAG Ma6302)*"
+    return 1
+}

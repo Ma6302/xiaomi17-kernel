@@ -8,14 +8,30 @@ MODDIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
 . "$MODDIR/lib/zram.sh"
 
 ONLY=""
-case "$1" in
-    --only) ONLY="$2" ;;
-esac
+FORCE=""
+# 扫描全部参数（--only X 与 --force 可任意顺序组合）
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --only)  ONLY="$2"; shift 2 ;;
+        --force) FORCE="1"; shift ;;
+        *)       shift ;;
+    esac
+done
+GUARD_FORCE="$FORCE"
 
-log "================ apply.sh start (only='${ONLY:-all}') ================"
+log "================ apply.sh start (only='${ONLY:-all}'${FORCE:+, force}) ================"
+
+load_conf || { log "no config.conf, abort"; exit 1; }
+
+# ---- 内核身份守卫 ----
+if ! guard_check; then
+    log "apply.sh: 守卫拦截，未做任何改动。"
+    log "apply.sh: 如确需在原厂/别家内核上强制执行，用 --force"
+    echo "mk-addon: 当前内核 $(uname -r) 不是本项目内核，已跳过。如需强制：apply.sh --force"
+    exit 2
+fi
 
 if [ -z "$ONLY" ]; then
-    load_conf || { log "no config.conf, abort"; exit 1; }
     me="$(cfg_get MASTER_ENABLE 1)"
     if [ "$me" != "1" ]; then
         log "MASTER_ENABLE != 1, nothing to do"
