@@ -1,6 +1,6 @@
 id=mk-addon
 name=Ma6302 Kernel Addon
-version=1.0.0
-versionCode=2026100901
+version=1.2.2
+versionCode=2026101101
 author=Ma6302
-description=内核附加模块：参数调节 + zram 压缩算法切换 + 研究数据收集（配套 Ma6302 自编译内核）
+description=内核附加模块：参数调节 + zram 压缩算法切换 + 内核日常记录仪（非充电非游戏时记录、插充电器自动归档）。1.2.2：游戏检测周期改为按秒计（默认 3 分钟），修复 2~3 分钟短游戏漏检。

@@ -21,7 +21,10 @@ GUARD_FORCE="$FORCE"
 
 log "================ apply.sh start (only='${ONLY:-all}'${FORCE:+, force}) ================"
 
+# 方案C：确保外部持久配置存在（首次运行播种）
+seed_conf
 load_conf || { log "no config.conf, abort"; exit 1; }
+log "apply.sh: conf = $CONF"
 
 # ---- 内核身份守卫 ----
 if ! guard_check; then
@@ -43,6 +46,8 @@ run_all() {
     tune_vm
     tune_io
     tune_net
+    tune_walt
+    tune_cpuset
     zram_apply
     mctrl_apply
 }
@@ -53,6 +58,8 @@ case "$ONLY" in
     vm)    load_conf; tune_vm ;;
     io)    load_conf; tune_io ;;
     net)   load_conf; tune_net ;;
+    walt)  load_conf; tune_walt ;;
+    cpuset) load_conf; tune_cpuset ;;
     "")    run_all ;;
     *)     log "unknown --only '$ONLY'"; run_all ;;
 esac

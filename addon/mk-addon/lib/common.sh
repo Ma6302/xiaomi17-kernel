@@ -3,7 +3,40 @@
 
 MODDIR="${MODDIR:-$(cd "$(dirname "$0")" 2>/dev/null && pwd)}"
 LOG="${LOG:-/data/local/mk-addon.log}"
-CONF="${CONF:-$MODDIR/config.conf}"
+
+# ---------- 配置来源（方案C：外部持久路径，刷机不丢）----------
+# 优先级：
+#   1. 环境变量 CONF（测试/高级用法）
+#   2. /data/adb/mk-addon/config.conf  （用户配置，**持久**，刷机/重装模块都不覆盖）
+#   3. $MODDIR/config.conf             （包内默认，仅首次安装时用作种子）
+#
+# 为什么这样设计：
+#   旧版 config.conf 在模块目录内，刷 AK3 时 ksud module install 会用
+#   包内默认值 unzip -o 覆盖，导致用户开关被重置（2026-10-10 二次事故）。
+#   把「用户配置」放到 /data/adb/mk-addon/ 后，刷机彻底不影响它。
+EXT_CONF="/data/adb/mk-addon/config.conf"
+
+# 选定生效配置：外部优先，回退包内
+if [ -n "$CONF" ]; then
+    :                                   # 环境变量显式指定，尊重之
+elif [ -f "$EXT_CONF" ]; then
+    CONF="$EXT_CONF"
+else
+    CONF="$MODDIR/config.conf"
+fi
+
+# 首次运行时，把包内默认配置播种到外部持久路径
+seed_conf() {
+    [ -f "$EXT_CONF" ] && return 0
+    [ -f "$MODDIR/config.conf" ] || return 1
+    mkdir -p "$(dirname "$EXT_CONF")" 2>/dev/null
+    cp -f "$MODDIR/config.conf" "$EXT_CONF" 2>/dev/null && {
+        log "conf: seeded $EXT_CONF (from module default)"
+        CONF="$EXT_CONF"
+        return 0
+    }
+    return 1
+}
 
 log() {
     echo "[$(date '+%m-%d %H:%M:%S')] $*" >> "$LOG"

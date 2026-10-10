@@ -50,5 +50,42 @@ tune_net() {
     write_val 0 /proc/sys/net/ipv4/tcp_slow_start_after_idle
     write_val 1 /proc/sys/net/ipv4/tcp_no_metrics_save
     write_val 3 /proc/sys/net/ipv4/tcp_retries1
+    # 拥塞控制（bbr 需内核支持；不可用则保持原值）
+    cc="$(cfg_get TCP_CC keep)"
+    if [ "$cc" != "keep" ]; then
+        if grep -qw "$cc" /proc/sys/net/ipv4/tcp_available_congestion_control 2>/dev/null; then
+            write_val "$cc" /proc/sys/net/ipv4/tcp_congestion_control
+        else
+            log "  tcp_cc '$cc' 不可用，跳过"
+        fi
+    fi
     log "net: done"
+}
+
+# ---- WALT 调度库标记（游戏/Flutter 应用负载追踪优化）----
+tune_walt() {
+    [ "$(cfg_get WALT_TUNE 0)" = "1" ] || { log "walt: disabled"; return 0; }
+    log "walt: start"
+    libs="$(cfg_get WALT_SCHED_LIB 0)"
+    [ "$libs" != "0" ] && write_val "$libs" /proc/sys/walt/sched_lib_name
+    log "walt: done ($libs)"
+}
+
+# ---- cpuset 亲和（后台省电 / 前台全开）----
+tune_cpuset() {
+    [ "$(cfg_get CPUSET_TUNE 0)" = "1" ] || { log "cpuset: disabled"; return 0; }
+    log "cpuset: start"
+    # 小核列表（自动探测，默认 0-5）
+    LITTLE="$(cfg_get CPUSET_BACKGROUND_CPUS auto)"
+    if [ "$LITTLE" = "auto" ]; then
+        LITTLE="$(cat /sys/devices/system/cpu/cpu0/topology/cluster_cpus_list 2>/dev/null || echo 0-5)"
+    fi
+    ALL="$(cat /sys/devices/system/cpu/present 2>/dev/null || echo 0-7)"
+    write_val "$LITTLE" /dev/cpuset/background/cpus
+    sb="$(cfg_get CPUSET_SYSTEM_BG_CPUS auto)"
+    [ "$sb" = "auto" ] && sb="$ALL"
+    write_val "$sb" /dev/cpuset/system-background/cpus
+    write_val "$ALL" /dev/cpuset/foreground/cpus
+    write_val "$ALL" /dev/cpuset/top-app/cpus
+    log "cpuset: done (bg=$LITTLE sysbg=$sb)"
 }

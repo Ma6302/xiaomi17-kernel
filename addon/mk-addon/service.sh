@@ -13,7 +13,10 @@ done
 sleep 5
 
 log "================ service.sh boot apply ================"
+# 方案C：首次运行把包内默认配置播种到持久路径（/data/adb/mk-addon/config.conf）
+seed_conf
 load_conf || { log "no config.conf"; exit 0; }
+log "service.sh: conf = $CONF"
 
 # ---- 内核身份守卫：刷回原厂/别家内核后，本模块自动停止工作 ----
 if ! guard_check; then
@@ -38,6 +41,8 @@ else
     tune_vm
     tune_io
     tune_net
+    tune_walt
+    tune_cpuset
     zram_apply
     mctrl_apply
 fi
@@ -46,5 +51,14 @@ fi
 if [ "$(cfg_get COLLECT_ON_BOOT 1)" = "1" ]; then
     sh "$MODDIR/collect.sh" >> "$LOG" 2>&1
 fi
+
+# ---- A/B 采样器：开机持续采样（受 SAMPLER_ENABLE + 守卫控制）----
+# 注意：1.2.0 起默认关闭（SAMPLER_ENABLE=0），由「内核日常记录仪」取代。
+. "$MODDIR/lib/sampler.sh"
+sampler_boot_start
+
+# ---- 内核日常记录仪：非充电+非游戏时记录，插充电器时归档 ----
+. "$MODDIR/lib/recorder.sh"
+recorder_boot_start
 
 log "================ service.sh done ================"

@@ -1,0 +1,23 @@
+# MK-Addon 源码指纹与产物记录
+# 生成时间: 2026-10-10 16:10:54
+# 用途: 交付链路比对（见 交付校验清单.md）
+
+[source_md5]
+module.prop        d55a398aadfa7863ed6e8864b07db162
+install.sh         a7262e78f0d5c46c80d6217e258071a0
+customize.sh       c9da758ae516d85366c0ba30b86f2dcd
+uninstall.sh       b36a223cadb84e92dcf5d3256ddfe419
+config.conf        ba4ebb46eb8294b97fd4d1d3c7641de6
+service.sh         420ebdda181e1544e12e80c61570d28f
+apply.sh           69cffb67faa1a8f8118e2a9edd511c0b
+collect.sh         9b74fb4169417eff6621929540ebe5c2
+lib/common.sh      5068f89303785ae40a318b09d4fb26a0
+lib/tune.sh        5eb92b398caa639447c95e9f29181af4
+lib/zram.sh        bb22566de302bcf3043517b2d84ed27a
+lib/sampler.sh     7b8c69cf1d813a1f3bd12ab731354057
+lib/recorder.sh    42e626eaa9dfb553771dac69189cd60c
+
+[artifact]
+file    /sdcard/Download/Operit/kernel-dev/mk-addon/mk-addon-1.2.2.zip
+md5     2d9d1ea427f8e6e05180b188c4d50abc
+size    30838
