@@ -52,14 +52,18 @@ stock_kernel  = 6.12.69-android16-6-g586bfab1b9c5-abogki536749445-4k
 security_patch = 2026-09-01
 
 [artifacts]
-# 最新可用构建（2026-10-09，boot_index 372，mi_sched 路径 A + MK-Addon）
+# 最新可用构建（2026-10-10，boot_index 380，V3：pathC + J1 + J2 + K1）
 kernel_version_string = 6.12.69-android16-6-4k-Ma6302
 vermagic              = 6.12.69-android16-6-4k SMP preempt mod_unload modversions aarch64
-image_md5             = 72549b282b413f63f9e43431e00cbcbb
-package_name          = pudding-cctv18-20261009-misched.zip
-package_md5           = a96113bc54a004bf25f0aaba8a59a874
-package_size          = 19991918
-boot_index            = 372
+image_md5             = 4009e331c312f67120911fcb16686b0a
+package_name          = pudding-cctv18-20261010-v3.zip
+package_md5           = 4a827d8b59377c99f78ad77d8fe247a2
+package_size          = 20097141
+boot_index            = 380
+# 包内嵌 mk-addon-1.2.2.zip (md5 2d9d1ea427f8e6e05180b188c4d50abc)
+# V3 = pathC(MQHD 可启停) + J1(LOG_BUF_SHIFT=23) + J2(ZRAM_DEF_COMP=lz4) + K1(GMS 伪装)
+# 验证：dmesg 19848 行 / zram [lz4] / 普通进程看 Ma6302 签名、GMS 进程看 6.12.69
+# 已知技术债（非 V3 引入）：node_cache(LZ4 CRC 不符)、rust_binder(rustc crate hash 天然不同)
 
 # 历史构建（均验证开机）
 # 2026-10-08  boot_index 365  零调优基线
@@ -70,6 +74,16 @@ boot_index            = 372
 #   image_md5   = b90644df98b8f4ced9220eb347ff387d
 #   package     = pudding-cctv18-20261009-zstd-lz4.zip
 #   package_md5 = 7fe863992d60ea88bc6f97c883285c91
+# 2026-10-10  boot_index 377  pathC（MQHD 可启停）+ mk-addon 1.1.0
+#   package     = pudding-cctv18-20261010-mqhd-pathC.zip  （归入 05-归档）
+#   package_md5 = 4f2d8c55ed9e729effc3a25e4b50b504  （旧内嵌件版本）
+
+[addon]
+# MK-Addon（内核附加模块）—— 源码在 addon/mk-addon/
+# 1.2.0  日常记录仪（取代 A/B 采样器）                        f74b33bb154f7377b58192499e853c52
+# 1.2.1  段内核归属快照 / pid 复用误判 / 脏段阈值 / 自定义游戏包名   6389a57c1502c224d620197e02d4a4e5
+# 1.2.2  游戏检测周期按秒计（修 2~3 分钟短游戏漏检）            2d9d1ea427f8e6e05180b188c4d50abc
+current = 1.2.2
 
 [abi_baseline]
 # 四重 ABI 校验结果（全部通过，预测与实测一致）
